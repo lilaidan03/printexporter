@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Exporter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="top-bar">
+    <span class="top-bar__privacy">
+      <svg class="top-bar__icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+      Your images never leave your device.
+    </span>
+  </div>
+
+  <!-- ===== Header / Logo ===== -->
+  <header class="header">
+    <div class="header__inner">
+      <div class="logo">
+        <svg class="logo__icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="24" height="24" rx="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 20L12 14L15 17L19 11L22 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="2" fill="currentColor"/>
+        </svg>
+        <span class="logo__text">PRINT <span class="logo__accent">EXPORTER</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ===== Hero Section ===== -->
+    <section class="hero">
+      <h1 class="hero__title">Crop &amp; Resize to Standard Poster Sizes</h1>
+      <p class="hero__subtitle">Select your image, pick your ratios, and export — entirely in your browser.</p>
+    </section>
+
+    <!-- ===== Upload Area ===== -->
+    <section id="uploadSection" class="upload-section">
+      <div id="dropZone" class="drop-zone">
+        <div class="drop-zone__content">
+          <svg class="drop-zone__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 32V8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M16 16L24 8L32 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 28V38C6 40.2091 7.79086 42 10 42H38C40.2091 42 42 40.2091 42 38V28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <p class="drop-zone__prompt">Drag Image Here</p>
+        </div>
+      </div>
+
+      <label class="upload-btn" for="fileInput">
+        <svg class="upload-btn__icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 15V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        UPLOAD IMAGE TO START
+      </label>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png" hidden>
+
+      <p class="upload-hint">or paste image &middot; Accepts JPG and PNG</p>
+
+      <div class="upload-tip">
+        <svg class="upload-tip__icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.399l-.244.003.028-.132 1.601-.3h.33l-.674 3.159zm-.09-3.38a.755.755 0 1 1 0 1.506.755.755 0 0 1 0-1.506z"/>
+        </svg>
+        <div class="upload-tip__text">
+          <p>For best results, use an image at least <strong>7200 &times; 10800 px</strong> (portrait) or <strong>10800 &times; 7200 px</strong> (landscape) &mdash; the largest export size. This ensures every poster ratio exports at full quality.</p>
+          <p>Smaller images still work &mdash; any sizes that would require upscaling are automatically skipped.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Image Info (hidden until image loaded) ===== -->
+    <section id="imageInfo" class="image-info hidden">
+      <div class="image-info__card">
+        <div class="preview-wrapper">
+          <canvas id="previewCanvas"></canvas>
+        </div>
+        <div class="info-details">
+          <p id="fileName" class="info-filename-source"></p>
+          <div class="export-name-field">
+            <label for="exportName" class="export-name-label">Export Name</label>
+            <input type="text" id="exportName" class="export-name-input" placeholder="e.g. dog, sunset, poster…" maxlength="80" autocomplete="off" spellcheck="false">
+            <p class="export-name-hint">Files will be named: <span id="exportNamePreview" class="export-name-preview"></span></p>
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Dimensions</span>
+              <span id="infoDimensions" class="info-value"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Aspect Ratio</span>
+              <span id="infoRatio" class="info-value"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">File Size</span>
+              <span id="infoSize" class="info-value"></span>
+            </div>
+          </div>
+          <button id="clearBtn" class="btn-clear">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+            Remove Image
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Divider ===== -->
+    <hr class="divider">
+
+    <!-- ===== Ratio Selection ===== -->
+    <section id="ratioSection" class="ratio-section">
+      <div class="section-header">
+        <h2 class="section-title">Select Output Ratios</h2>
+        <div class="ratio-actions">
+          <button id="selectAllBtn" class="btn-text">Select All</button>
+          <span class="ratio-actions__sep">/</span>
+          <button id="deselectAllBtn" class="btn-text">Deselect All</button>
+        </div>
+      </div>
+
+      <!-- Orientation Tabs -->
+      <div class="orientation-tabs">
+        <button id="tabPortrait" class="orientation-tab orientation-tab--active" type="button">
+          <svg class="orientation-tab__icon" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="22" height="30" rx="2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Portrait
+        </button>
+        <button id="tabLandscape" class="orientation-tab" type="button">
+          <svg class="orientation-tab__icon orientation-tab__icon--landscape" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="30" height="22" rx="2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Landscape
+        </button>
+      </div>
+
+      <!-- Orientation mismatch warning (hidden by default) -->
+      <div id="orientationWarning" class="orientation-warning hidden">
+        <svg class="orientation-warning__icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.399l-.244.003.028-.132 1.601-.3h.33l-.674 3.159zm-.09-3.38a.755.755 0 1 1 0 1.506.755.755 0 0 1 0-1.506z"/>
+        </svg>
+        <span id="orientationWarningText" class="orientation-warning__text"></span>
+      </div>
+
+      <div class="mode-hint">
+        <p><strong>Crop</strong> fills the entire poster &mdash; edges may be trimmed.</p>
+        <p><strong>Fit</strong> keeps your full image &mdash; bars only where needed.</p>
+        <p><strong>Mat</strong> adds a uniform border on all sides &mdash; gallery-style.</p>
+      </div>
+
+      <!-- Ratio cards rendered dynamically by JS -->
+      <div id="ratioGrid" class="ratio-grid"></div>
+    </section>
+
+    <!-- ===== Export Button ===== -->
+    <section id="exportSection" class="export-section hidden">
+      <div class="format-picker">
+        <span class="format-picker__label">Export Format</span>
+        <div class="format-picker__options">
+          <label class="format-option">
+            <input type="checkbox" id="formatPng" checked>
+            <span class="format-option__check">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+            </span>
+            <span class="format-option__text">PNG</span>
+          </label>
+          <label class="format-option">
+            <input type="checkbox" id="formatJpeg">
+            <span class="format-option__check">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+            </span>
+            <span class="format-option__text">JPEG</span>
+          </label>
+        </div>
+      </div>
+      <button id="exportBtn" class="export-btn">
+        <svg class="export-btn__icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3V16M12 16L7 11M12 16L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 17V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        EXPORT AS ZIP
+      </button>
+    </section>
+
+    <!-- ===== Skipped Sizes Warning ===== -->
+    <section id="skippedWarnings" class="skipped-warnings hidden">
+      <div class="skipped-warnings__header">
+        <svg class="skipped-warnings__icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        <h3 class="skipped-warnings__title">Sizes Skipped to Protect Print Quality</h3>
+      </div>
+      <p class="skipped-warnings__desc">The following sizes were not exported because the source image is too small. Generating them would require upscaling, which degrades print quality.</p>
+      <ul id="skippedList" class="skipped-list"></ul>
+    </section>
+
+    <!-- ===== Preview Lightbox ===== -->
+    <div id="previewLightbox" class="lightbox hidden">
+      <div class="lightbox__backdrop" id="lightboxBackdrop"></div>
+      <div class="lightbox__card">
+        <div class="lightbox__header">
+          <span id="lightboxTitle" class="lightbox__title"></span>
+          <button id="lightboxClose" class="lightbox__close" type="button">&times;</button>
+        </div>
+        <div class="lightbox__canvas-wrap">
+          <canvas id="lightboxCanvas"></canvas>
+        </div>
+        <div id="lightboxMatControls" class="lightbox__mat-controls hidden">
+          <label class="mat-slider-label">Mat: <span id="lightboxMatValue" class="mat-value">5</span>%</label>
+          <input type="range" min="1" max="20" value="5" id="lightboxMatRange" class="mat-range mat-range--lg">
+        </div>
+        <div id="lightboxColorControl" class="lightbox__color-control hidden">
+          <label class="color-pick-label">Background:</label>
+          <input type="color" value="#000000" id="lightboxColorInput" class="color-swatch color-swatch--lg">
+        </div>
+        <p id="lightboxDesc" class="lightbox__desc"></p>
+      </div>
+    </div>
+
+    <!-- ===== Progress Overlay ===== -->
+    <div id="progressOverlay" class="progress-overlay hidden">
+      <div class="progress-card">
+        <div class="spinner"></div>
+        <h3 class="progress-title">Processing Images&hellip;</h3>
+        <p id="progressStatus" class="progress-status">Preparing&hellip;</p>
+        <div class="progress-bar-track">
+          <div id="progressBar" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <p id="progressPercent" class="progress-percent">0%</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p>Print Exporter &mdash; 100% client-side. Your images never leave your device.</p>
+      <p class="footer__support">Need help, have a question, or want to request a feature? Email us at <a href="mailto:support@printexporter.com">support@printexporter.com</a></p>
+    </div>
+  </footer>
+
+  <!-- JSZip via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+          integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"></script>
+
+  <!-- Toast notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
