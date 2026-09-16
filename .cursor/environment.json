@@ -1,0 +1,8 @@
+{
+  "name": "Print Exporter",
+  "install": "echo 'No build step: Print Exporter is a static client-side site (JSZip is loaded from a CDN).'",
+  "start": "if curl -sf -o /dev/null http://localhost:8000/index.html 2>/dev/null; then echo 'static-server already running on :8000'; else setsid bash -c 'cd /workspace && exec python3 -m http.server 8000 --bind 0.0.0.0' >/tmp/print-exporter-server.log 2>&1 < /dev/null & fi; for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:8000/index.html && { echo 'static-server ready at http://localhost:8000/index.html'; break; }; sleep 1; done",
+  "ports": [
+    { "name": "web", "port": 8000 }
+  ]
+}
